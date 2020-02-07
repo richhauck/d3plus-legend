@@ -223,7 +223,7 @@ export default class ColorScale extends BaseClass {
         this._colorScale = scaleQuantile()
         .domain(buckets)
         .range(colors);
-      }
+      }else{
         this._colorScale = scaleLinear()
         .domain(buckets)
         .range(colors);
