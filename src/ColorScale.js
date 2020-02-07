@@ -7,7 +7,7 @@ import ckmeans from "./ckmeans";
 import Legend from "./Legend";
 
 import {extent, merge, min, range} from "d3-array";
-import {scaleLinear, scaleThreshold, scaleQuantize} from "d3-scale";
+import {scaleLinear, scaleThreshold, scaleQuantile} from "d3-scale";
 import {select} from "d3-selection";
 
 import {Axis} from "d3plus-axis";
@@ -181,7 +181,7 @@ export default class ColorScale extends BaseClass {
       }
       else {
         if (!colors) {
-          if (this._scale === "buckets" || this._scale === 'quantize') {
+          if (this._scale === "buckets" || this._scale === 'quantile') {
             colors = range(0, this._buckets, 1)
               .map(i => colorLighter(negative ? this._colorMin : this._colorMax, i / this._buckets));
             if (positive) colors = colors.reverse();
@@ -195,7 +195,7 @@ export default class ColorScale extends BaseClass {
         buckets = range(domain[0], domain[1] + step / 2, step);
       }
 
-      if (this._scale === "buckets" || this._scale === 'quantize') {
+      if (this._scale === "buckets" || this._scale === 'quantile') {
         ticks = buckets.concat([buckets[buckets.length - 1]]);
       }
 
@@ -219,11 +219,11 @@ export default class ColorScale extends BaseClass {
         if (buckets.includes(0)) buckets[buckets.indexOf(0)] = 1;
       }
 
-      if (this._scale === 'quantize') {
-        this._colorScale = scaleQuantize()
+      if (this._scale === 'quantile') {
+        this._colorScale = scaleQuantile()
         .domain(buckets)
         .range(colors);
-      }else{
+      }
         this._colorScale = scaleLinear()
         .domain(buckets)
         .range(colors);
@@ -231,7 +231,7 @@ export default class ColorScale extends BaseClass {
 
     }
 
-    if (this._bucketAxis || !["buckets", "jenks", 'quantize'].includes(this._scale)) {
+    if (this._bucketAxis || !["buckets", "jenks", 'quantile'].includes(this._scale)) {
 
       const axisConfig = assign({
         domain: horizontal ? domain : domain.reverse(),
@@ -538,7 +538,7 @@ export default class ColorScale extends BaseClass {
   /**
       @memberof ColorScale
       @desc If *value* is specified, sets the scale of the ColorScale and returns the current class instance. If *value* is not specified, returns the current scale value.
-      @param {String} [*value* = "linear"] Can either be "linear", "jenks", "quantize", or "buckets".
+      @param {String} [*value* = "linear"] Can either be "linear", "jenks", "quantile", or "buckets".
       @chainable
   */
   scale(_) {
